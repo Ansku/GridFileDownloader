@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Vaadin-License-Title: Apache License 2.0
+Implementation-Title: GridFileDownloader
+Implementation-Version: 0.1.0
+Vaadin-Widgetsets: org.vaadin.gridfiledownloader.GridFileDownloaderWid
+ getset
+Vaadin-Package-Version: 1
+Class-Path: 
+

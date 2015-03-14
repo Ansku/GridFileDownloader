@@ -1,0 +1,9 @@
+/build/
+/.settings/
+/WebContent/WEB-INF/
+/WebContent/VAADIN/widgetsets/
+*/rebel.xml
+.project
+.classpath
+*.launch
+*.cache
