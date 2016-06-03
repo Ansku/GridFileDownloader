@@ -5,5 +5,5 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.vaadin.gridfiledownloader</groupId>
     <artifactId>GridFileDownloader</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
 </project> 

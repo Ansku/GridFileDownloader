@@ -28,10 +28,15 @@ import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.data.Container.Indexed;
 import com.vaadin.data.Item;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.shared.ui.grid.HeightMode;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Grid.CellDescriptionGenerator;
+import com.vaadin.ui.Grid.CellReference;
+import com.vaadin.ui.Grid.Column;
+import com.vaadin.ui.Grid.HeaderCell;
 import com.vaadin.ui.Grid.SelectionMode;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -58,12 +63,11 @@ public class GridFileDownloaderUI extends UI {
         final Grid grid = new Grid("Attachment grid");
         grid.setHeightMode(HeightMode.ROW);
         grid.setHeightByRows(5);
-        // grid.setSelectionMode(SelectionMode.NONE);
-        grid.setSelectionMode(SelectionMode.MULTI);
+        grid.setSelectionMode(SelectionMode.NONE);
 
-        grid.addColumn("filename");
-        grid.getColumn("filename").setHeaderCaption("File name");
-        grid.getColumn("filename").setExpandRatio(1);
+        Column column = grid.addColumn("filename");
+        column.setHeaderCaption("File name");
+        column.setExpandRatio(1);
 
         Indexed dataSource = grid.getContainerDataSource();
         for (int i = 1; i <= 5; ++i) {
@@ -73,6 +77,23 @@ public class GridFileDownloaderUI extends UI {
         }
         layout.addComponent(grid);
         addGridFileDownloader(grid);
+
+        // set tooltip for the default download column
+        grid.setCellDescriptionGenerator(new CellDescriptionGenerator() {
+
+            @Override
+            public String getDescription(CellReference cell) {
+                if (FontAwesome.DOWNLOAD.equals(cell.getPropertyId())) {
+                    return "download";
+                }
+                return null;
+            }
+        });
+
+        // clear the header
+        HeaderCell downloadHeader = grid.getHeaderRow(0).getCell(
+                FontAwesome.DOWNLOAD);
+        downloadHeader.setHtml("");
     }
 
     /**
