@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Vaadin Ltd.
+ * Copyright 2015-2016 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@
 package org.vaadin.gridfiledownloader;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.vaadin.gridfiledownloader.client.GridFileDownloaderServerRpc;
 import org.vaadin.gridfiledownloader.client.GridFileDownloaderState;
@@ -46,6 +47,10 @@ import com.vaadin.ui.renderers.HtmlRenderer;
  */
 @StyleSheet("gridfiledownloader.css")
 public class GridFileDownloader extends FileDownloader {
+
+    private static Logger getLogger() {
+        return Logger.getLogger(GridFileDownloader.class.getName());
+    }
 
     /**
      * Provide both the {@link StreamSource} and the filename in an on-demand
@@ -131,7 +136,10 @@ public class GridFileDownloader extends FileDownloader {
 
         boolean markedProcessed = false;
         try {
-            waitForRPC();
+            if (!waitForRPC()) {
+                handleRPCTimeout();
+                return false;
+            }
             getResource().setFilename(gridStreamResource.getFilename());
 
             VaadinSession session = getSession();
@@ -180,12 +188,21 @@ public class GridFileDownloader extends FileDownloader {
         }
     }
 
+    protected void handleRPCTimeout() {
+        markProcessed();
+        getLogger().severe(
+                "Download attempt timeout before receiving RPC call about row");
+    }
+
     /**
      * Wait until RPC call has reached the server-side with the rowId.
      */
-    protected void waitForRPC() {
+    protected boolean waitForRPC() {
         int counter = 0;
-        while ((getRowId() == null && counter < 30)) {
+        while (counter < 30) {
+            if (getRowId() != null) {
+                return true;
+            }
             try {
                 Thread.sleep(100);
             } catch (InterruptedException ignore) {
@@ -193,6 +210,7 @@ public class GridFileDownloader extends FileDownloader {
                 ++counter;
             }
         }
+        return getRowId() != null;
     }
 
     /**
