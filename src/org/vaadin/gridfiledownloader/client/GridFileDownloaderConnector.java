@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Vaadin Ltd.
+ * Copyright 2015-2016 Vaadin Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -80,17 +80,44 @@ public class GridFileDownloaderConnector extends FileDownloaderConnector
                 rpc.download(event.getTargetCell().getRowIndex());
                 GridFileDownloaderConnector.super.onClick(null);
             } else {
-                VNotification n = VNotification.createNotification(
-                        getState().notificationDelay, grid);
-                n.getElement().getStyle().setTextAlign(TextAlign.LEFT);
-                n.show("<h1>"
-                        + getState().processingCaption
-                        + "</h1><br />"
-                        + getState().processingDescription.replace("\n",
-                                "<br/>\n"), VNotification.CENTERED,
-                        getState().processingNotificationType);
+                downloadIgnoredBecauseProcessing();
             }
         }
+    }
+
+    /**
+     * Trigger the download for the given column and row from some other
+     * ClickEvent than GridClickEvent. This might be required if only parts of
+     * the download column should trigger the download. As this method needs to
+     * be called specifically, there is no check that the column index
+     * corresponds with the download column in this case.
+     *
+     * @param columnIndex
+     * @param rowIndex
+     */
+    public void remoteClick(int columnIndex, int rowIndex) {
+        if (!processing) {
+            processing = true;
+            logger.log(Level.FINE,
+                    "GridFileDownloader: started to process click");
+            rpc.download(rowIndex);
+            GridFileDownloaderConnector.super.onClick(null);
+        } else {
+            downloadIgnoredBecauseProcessing();
+        }
+    }
+
+    /**
+     * Display notification for informing the user that a new download couldn't
+     * be triggered because previous download is still processing.
+     */
+    protected void downloadIgnoredBecauseProcessing() {
+        VNotification n = VNotification.createNotification(
+                getState().notificationDelay, grid);
+        n.getElement().getStyle().setTextAlign(TextAlign.LEFT);
+        n.show("<h1>" + getState().processingCaption + "</h1><br />"
+                + getState().processingDescription.replace("\n", "<br/>\n"),
+                VNotification.CENTERED, getState().processingNotificationType);
     }
 
     @Override
