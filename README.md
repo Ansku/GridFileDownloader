@@ -1,3 +1,6 @@
+[![Published on Vaadin  Directory](https://img.shields.io/badge/Vaadin%20Directory-published-00b4f0.svg)](https://vaadin.com/directory/component/gridfiledownloader)
+[![Stars on vaadin.com/directory](https://img.shields.io/vaadin-directory/star/gridfiledownloader.svg)](https://vaadin.com/directory/component/gridfiledownloader)
+
 # GridFileDownloader
 
 Note: Proper functionality of this add-on requires the use of push or pull or some other way to update the state changes to the client-side when processing is done.
